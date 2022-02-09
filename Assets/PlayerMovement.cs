@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour
 
     //Stores the speed of the player
     [SerializeField] float Speed;
+    //If you ever need to stop movement just make this true
+    public bool dontMove;
 
     // Update is called once per frame
     void Update()
@@ -22,7 +24,11 @@ public class PlayerMovement : MonoBehaviour
         {
             Movement *= 0.75f;
         }
-
-        transform.position += (Vector3)Movement * Speed * Time.deltaTime;
+        if (!dontMove)
+        {   
+            transform.position += (Vector3)Movement * Speed * Time.deltaTime;
+            //this is because the object might go in the z corridinates which will not let the camera seed iffernt things as they might get behind the camera if they are a child of the moving object
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        }
     }
 }
