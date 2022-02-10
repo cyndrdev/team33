@@ -32,7 +32,7 @@ public class Harry_flail : MonoBehaviour
     {
         //if the player click mouse button and where they clicked is in range or attacking already
         lr.SetPositions(new Vector3[] { Player.transform.position, transform.position });
-        if ((Input.GetKeyDown(KeyCode.Mouse0) && Vector2.Distance(Camera.main.ScreenToWorldPoint(Input.mousePosition), Player.transform.position) <= range && Attacking == false) | Attacking && !FlailOut)
+        if (((Input.GetKeyDown(KeyCode.Mouse0) && Vector2.Distance(Camera.main.ScreenToWorldPoint(Input.mousePosition), Player.transform.position) <= range && Attacking == false) | Attacking) && !FlailOut)
         {
             
             Attacking = true;
@@ -72,13 +72,17 @@ public class Harry_flail : MonoBehaviour
                 CameraShaker.Instance.ShakeOnce(3f, 1f, 0.1f, 0.1f);
             }
         }
-        else if (FlailOut && Input.GetKeyDown(KeyCode.Mouse0))
+        else if (FlailOut && Input.GetKeyDown(KeyCode.Mouse0) && !Attacking)
         {
             StartCoroutine(Pullback());
         }
         else if (FlailOut && Input.GetKeyDown(KeyCode.Mouse1))
         {
             StartCoroutine(PlayerPull());
+        }
+        if(Input.GetKeyDown(KeyCode.Space) && !FlailOut)
+        {
+            StartCoroutine(SpinAttack());
         }
     }
 
@@ -116,5 +120,26 @@ public class Harry_flail : MonoBehaviour
         t = 0;
         //makes it so the flail can move again
         GetComponent<Rigidbody2D>().mass = 1.5f;
+    }
+
+    IEnumerator SpinAttack()
+    {
+        Player.GetComponent<DistanceJoint2D>().maxDistanceOnly = false;
+        Attacking = true;
+        FlailOut = true;
+        GetComponent<Rigidbody2D>().mass = 10000f;
+        float i = 3f;
+        while(i > 0)
+        {
+            CameraShaker.Instance.ShakeOnce(3f, 0.25f, 0.1f, 0.1f);
+            i -= Time.deltaTime;
+            transform.RotateAround(Player.transform.position, Vector3.forward, 500f * Time.deltaTime);
+            //transform.position += transform.position - Player.transform.position * Time.deltaTime * 0.00000000001f;
+            yield return new WaitForEndOfFrame();
+        }
+        GetComponent<Rigidbody2D>().mass = 1.5f;
+        FlailOut = false;
+        Attacking = false;
+        Player.GetComponent<DistanceJoint2D>().maxDistanceOnly = true;
     }
 }
