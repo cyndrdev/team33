@@ -124,19 +124,23 @@ public class Harry_flail : MonoBehaviour
 
     IEnumerator SpinAttack()
     {
+        //makes it so thew flail is far away from the body
         Player.GetComponent<DistanceJoint2D>().maxDistanceOnly = false;
         Attacking = true;
         FlailOut = true;
         GetComponent<Rigidbody2D>().mass = 10000f;
+        //how long the attack is
         float i = 3f;
         while(i > 0)
         {
+            //shakes camera
             CameraShaker.Instance.ShakeOnce(3f, 0.25f, 0.1f, 0.1f);
             i -= Time.deltaTime;
+            //rotates the flail around the player
             transform.RotateAround(Player.transform.position, Vector3.forward, 500f * Time.deltaTime);
-            //transform.position += transform.position - Player.transform.position * Time.deltaTime * 0.00000000001f;
             yield return new WaitForEndOfFrame();
         }
+        //resets everything
         GetComponent<Rigidbody2D>().mass = 1.5f;
         FlailOut = false;
         Attacking = false;
