@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class playerHealth : MonoBehaviour
 {
     public float maxHealth, currentHealth;
     public Slider healthSlider;
+    public UnityEvent shock;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +24,7 @@ public class playerHealth : MonoBehaviour
     public void takeDamage(float damage) 
     {
         currentHealth -= damage;
+        shock.Invoke();
     }
     void Update()
     {
@@ -33,6 +36,7 @@ public class playerHealth : MonoBehaviour
     }
     public void die()
     {
+        shock.Invoke();
         Destroy(gameObject);
     }
 }

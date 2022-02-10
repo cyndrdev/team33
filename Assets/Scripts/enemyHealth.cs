@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using Pathfinding;
 public class enemyHealth : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class enemyHealth : MonoBehaviour
     public Slider healthSlider;
     public AIPath aipath;
     public Transform Sprite;
+    public UnityEvent shock;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +26,7 @@ public class enemyHealth : MonoBehaviour
     public void takeDamageEnemy(float damage) 
     {
         currentHealth -= damage;
+        shock.Invoke();
     }
     void Update()
     {
@@ -42,6 +45,7 @@ public class enemyHealth : MonoBehaviour
     }
     public void dieEnemy()
     {
+        shock.Invoke();
         Destroy(gameObject);
     }
 }
