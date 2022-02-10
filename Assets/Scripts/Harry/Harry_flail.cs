@@ -13,6 +13,7 @@ public class Harry_flail : MonoBehaviour
     [SerializeField] float range;
     [SerializeField] float attackTime;
     [SerializeField] float pullBackTime;
+    [SerializeField] float scaleChange;
     float t;
 
     [SerializeField] GameObject Player;
@@ -42,16 +43,18 @@ public class Harry_flail : MonoBehaviour
                 StartPos = transform.position;
             }
             //Moves the flail to the mouse pointer in attack time seconds
+            //Maybe doing it in a set time is bad because it makes short range attacks look slow and long range attacks look fast
+            //this makes short range attacks more powerful
             t += Time.deltaTime / attackTime;
             transform.position = Vector2.Lerp(StartPos, target, t);
             //increases and decreases the scale of the flail so it looks like it went up and down
             if(Vector2.Distance(transform.position, target) < Vector2.Distance(StartPos, target) / 2)
             {
-                transform.localScale *= 0.99f;
+                transform.localScale *= 1 - scaleChange;
             }
             else
             {
-                transform.localScale *= 1.01f;
+                transform.localScale *= 1 + scaleChange;
             }
             //when the flail is in the right position
             if(Vector2.Distance(transform.position, target) < 0.1f)
@@ -73,6 +76,10 @@ public class Harry_flail : MonoBehaviour
         {
             StartCoroutine(Pullback());
         }
+        else if (FlailOut && Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            StartCoroutine(PlayerPull());
+        }
     }
 
     IEnumerator Pullback()
@@ -85,6 +92,24 @@ public class Harry_flail : MonoBehaviour
         {
             t += Time.deltaTime / pullBackTime;
             transform.position = Vector2.Lerp(StartPos, Player.transform.position, t);
+            yield return new WaitForEndOfFrame();
+        }
+        FlailOut = false;
+        t = 0;
+        //makes it so the flail can move again
+        GetComponent<Rigidbody2D>().mass = 1.5f;
+    }
+
+    IEnumerator PlayerPull()
+    {
+        //gives camera shake for impact
+        //CameraShaker.Instance.ShakeOnce(3f, 0.5f, 0.1f, 0.1f);
+        StartPos = Player. transform.position;
+        //moves the player towards the player
+        while ((Vector2.Distance(transform.position, Player.transform.position) > 0.2f))
+        {
+            t += Time.deltaTime / pullBackTime;
+            Player.transform.position = Vector2.Lerp(StartPos, transform.position, t);
             yield return new WaitForEndOfFrame();
         }
         FlailOut = false;
