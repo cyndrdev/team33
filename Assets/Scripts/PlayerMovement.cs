@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Vector2 Movement;
 
     //Stores the speed of the player
-    [SerializeField] float Speed;
+    [SerializeField] float Speed, slowDownSpeed = 0.300f;
     //If you ever need to stop movement just make this true
     public bool dontMove, slowDown;
 
@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if (slowDown)
         {
-            Movement *= 0.250f;
+            Movement *= slowDownSpeed;
         }
         if (!dontMove)
         {   
