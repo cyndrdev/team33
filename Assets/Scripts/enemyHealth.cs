@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using Pathfinding;
 public class enemyHealth : MonoBehaviour
 {
     public float maxHealth, currentHealth;
     public Slider healthSlider;
+    public AIPath aipath;
+    public Transform Sprite;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +27,13 @@ public class enemyHealth : MonoBehaviour
     }
     void Update()
     {
+        if (aipath.desiredVelocity.x >= 0.1f)
+        {
+            Sprite.localScale = new Vector3(1f, 1f, 1f);
+        } else if (aipath.desiredVelocity.x <= -0.1f)
+        {
+            Sprite.localScale = new Vector3(-1f, 1f, 1f);
+        }
         healthSlider.value = currentHealth;
         if (currentHealth <= 0f)
         {
