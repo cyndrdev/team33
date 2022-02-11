@@ -13,17 +13,13 @@ public class flail : MonoBehaviour
     public float orbitDistance = 10.0f;
     public float orbitDegreesPerSec = 180.0f;
     public LayerMask layerToIgnore;
+    public DistanceJoint2D dsJoint;
+    public LineRenderer lineRender;
     // Start is called before the first frame update
     void Start()
     {
         timeForFlailGrappleToStopTemp = timeForFlailGrappleToStop;
         timeForFlailToStopTemp = timeForFlailToStop;
-    }
-    void Orbit()
-    {
-        // Keep us at orbitDistance from target
-        flailHead.position = transform.position + (flailHead.position - transform.position).normalized * orbitDistance;
-        flailHead.RotateAround(transform.position, new Vector3(0, 0, 1), orbitDegreesPerSec * Time.deltaTime);
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -32,12 +28,15 @@ public class flail : MonoBehaviour
     }
      void Update()
      {
-        if(!grapple && !Throw)
+        lineRender.SetPosition(0, new Vector3(transform.position.x, transform.position.y, 0));
+        lineRender.SetPosition(1, new Vector3(flailHead.position.x, flailHead.position.y, 0));
+        if (Input.GetMouseButton(0) && !Throw && !grapple)
         {
             orbit =true;
         }
         else
         {
+            dsJoint.enabled = true;
             orbit =false;
         }
         if (orbit)
@@ -45,7 +44,7 @@ public class flail : MonoBehaviour
             Orbit();
         }
         // flailHead.RotateAround(transform.position, new Vector3(x, y, z), rotationSpeed * Time.deltaTime);
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonUp(0))
         {
             Throw = true;
         }
@@ -76,8 +75,16 @@ public class flail : MonoBehaviour
             plMovement.slowDown = false;
         }
      }
+    void Orbit()
+    {
+        dsJoint.enabled = false;
+        // Keep us at orbitDistance from target
+        flailHead.position = transform.position + (flailHead.position - transform.position).normalized * orbitDistance;
+        flailHead.RotateAround(transform.position, new Vector3(0, 0, 1), orbitDegreesPerSec * Time.deltaTime);
+    }
     private void grappleThrow()
     {
+        dsJoint.enabled = false;
         plMovement.slowDown = true;
         transform.position = Vector3.MoveTowards(transform.position, flailHead.position, grappleSpeed * Time.deltaTime);
         flailHead.parent = null;
@@ -85,6 +92,7 @@ public class flail : MonoBehaviour
     //this is where the flail movement code happens
     private void flailThrow()
     {
+        dsJoint.enabled = false;
         plMovement.slowDown = true;
         var pos = Input.mousePosition;
         pos.z = 45;
